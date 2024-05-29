@@ -22,7 +22,7 @@ public class TextFile {
         buffer = new StringBuilder();
     }
 
-    public void copyTo(String anotherFilePath, boolean isAppend) {
+    public void copyFrom(String anotherFilePath, boolean isAppend) {
         System.out.println("Copy to [" + anotherFilePath + "] starts...");
         if (file.exists()) {
             try (
@@ -41,12 +41,12 @@ public class TextFile {
         System.out.println("Copy to [" + anotherFilePath + "] ends!");
     }
 
-    public void copyTo(TextFile anotherFile, boolean isAppend) {
-        System.out.println("Copy to [" + anotherFile.getPath() + "] starts...");
+    public void copyFrom(TextFile anotherFile, boolean isAppend) {
+        System.out.println("Copy from [" + anotherFile.getPath() + "] starts...");
         if (file.exists()) {
             try (
-                    BufferedReader reader = new BufferedReader(new FileReader(file));
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(anotherFile.getPath(), isAppend));
+                    BufferedReader reader = new BufferedReader(new FileReader(anotherFile.getPath()));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(file, isAppend));
             ) {
                 writer.newLine();
                 for (String s : reader.lines().collect(Collectors.toList())) {
@@ -57,7 +57,7 @@ public class TextFile {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("Copy to [" + anotherFile.getPath() + "] ends!");
+        System.out.println("Copy from [" + anotherFile.getPath() + "] ends!");
     }
 
     public void add(String text) {
@@ -79,7 +79,7 @@ public class TextFile {
     }
 
     private void addFromBufferToFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             if (new BufferedReader(new FileReader(file)).readLine() != null) {
                 writer.newLine();
             }
@@ -92,22 +92,32 @@ public class TextFile {
         }
     }
 
-    private void delete(String text) {
+    public void delete(String text) {
         System.out.println("Delete text from file starts...");
         try (
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         ) {
-            List<String> tempFile = reader.lines().filter(s -> !s.equals(text)).collect(Collectors.toList());
-            writer.newLine();
-            for (String s : tempFile) {
-                writer.write(s);
+            String line = reader.readLine();
+            while (line != null) {
+                buffer.append(line.replace(text, ""));
+                line = reader.readLine();
             }
+            replaceAll(buffer.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            buffer = new StringBuilder();
+        }
+        System.out.println("Delete text from file ends!");
+    }
+
+    private void replaceAll(String string) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(string);
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Delete text from file ends!");
     }
 
     public int getBufferLength() {
