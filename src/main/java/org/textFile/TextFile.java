@@ -12,6 +12,7 @@ public class TextFile {
 
     public TextFile(String filePath) {
         file = new File(filePath);
+        bufferLength = 1024;
     }
 
     public TextFile(String filePath, int bufferLength) {
