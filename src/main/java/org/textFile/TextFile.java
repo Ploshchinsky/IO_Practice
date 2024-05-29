@@ -9,6 +9,7 @@ public class TextFile {
     private File file;
     private StringBuilder buffer;
     private int bufferLength;
+    private int bufferActualSize;
 
     public TextFile(String filePath) {
         file = new File(filePath);
@@ -18,6 +19,7 @@ public class TextFile {
     public TextFile(String filePath, int bufferLength) {
         file = new File(filePath);
         this.bufferLength = bufferLength;
+        buffer = new StringBuilder();
     }
 
     public void copyTo(String anotherFilePath, boolean isAppend) {
@@ -60,16 +62,16 @@ public class TextFile {
 
     public void add(String text) {
         System.out.println("Add new text to file starts...");
-        if (buffer.length() < bufferLength) {
+        if (bufferActualSize < bufferLength) {
             addToBuffer(text);
-        } else {
-            addFromBufferToFile();
         }
+        addFromBufferToFile();
         System.out.println("Add new text to file ends!");
     }
 
     private void addToBuffer(String text) {
-        if (buffer.length() + text.length() > bufferLength) {
+        bufferActualSize = text.length();
+        if (bufferActualSize > bufferLength) {
             addFromBufferToFile();
         } else {
             buffer.append(text);
@@ -78,7 +80,9 @@ public class TextFile {
 
     private void addFromBufferToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.newLine();
+            if (new BufferedReader(new FileReader(file)).readLine() != null) {
+                writer.newLine();
+            }
             writer.write(buffer.toString());
             writer.flush();
         } catch (IOException e) {
@@ -119,8 +123,6 @@ public class TextFile {
     }
 
     public String read() {
-        addFromBufferToFile();
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             reader.lines().forEach(buffer::append);
             return buffer.toString();
@@ -129,5 +131,9 @@ public class TextFile {
         } finally {
             buffer = new StringBuilder();
         }
+    }
+
+    public int getBufferActualSize() {
+        return bufferActualSize;
     }
 }
