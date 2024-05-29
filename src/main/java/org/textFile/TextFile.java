@@ -83,6 +83,8 @@ public class TextFile {
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            buffer = new StringBuilder();
         }
     }
 
@@ -116,4 +118,16 @@ public class TextFile {
         return file.getPath();
     }
 
+    public String read() {
+        addFromBufferToFile();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            reader.lines().forEach(buffer::append);
+            return buffer.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            buffer = new StringBuilder();
+        }
+    }
 }
