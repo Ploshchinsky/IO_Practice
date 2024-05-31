@@ -1,4 +1,4 @@
-package org.textFile;
+package org.TestTextFile;
 
 public class App 
 {
