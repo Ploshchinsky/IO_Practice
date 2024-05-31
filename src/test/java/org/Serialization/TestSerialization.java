@@ -33,33 +33,33 @@ public class TestSerialization {
 
     @Test
     public void test1() {
-        //write all objects from list to file
-        System.out.println("Write to the file starts...");
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(pathFile2))) {
-            for (Employee e : startList) {
-                outputStream.writeObject(e);
-            }
-            System.out.println("All objects from List has been write!");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        //read all objects from file to list
-        System.out.println("Read from the file starts...");
-        try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(Paths.get(pathFile2)))) {
-            Employee temp;
-            while (true) {
-                try {
-                    temp = (Employee) inputStream.readObject();
-                } catch (EOFException ex) {
-                    break;
+            //write all objects from list to file
+            System.out.println("Write to the file starts...");
+            try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(pathFile2))) {
+                for (Employee e : startList) {
+                    outputStream.writeObject(e);
                 }
-                endList.add(temp);
+                System.out.println("All objects from List has been write!");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            System.out.println("All objects from the file has been read!");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+            //read all objects from file to list
+            System.out.println("Read from the file starts...");
+            try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(Paths.get(pathFile2)))) {
+                Employee temp;
+                while (true) {
+                    try {
+                        temp = (Employee) inputStream.readObject();
+                    } catch (EOFException ex) {
+                        break;
+                    }
+                    endList.add(temp);
+                }
+                System.out.println("All objects from the file has been read!");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
         System.out.println("-----");
         endList.forEach(System.out::println);
