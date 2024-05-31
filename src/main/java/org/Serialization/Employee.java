@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Employee implements Serializable {
+    private static final long serialVersionUUID = 1;
     private String name;
     private int age;
     private int salary;

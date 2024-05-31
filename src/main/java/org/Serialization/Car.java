@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Car implements Serializable {
+    private static final long serialVersionUUID = 1;
     private String brand;
     private String model;
     private int horsePower;
